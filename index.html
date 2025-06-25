@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>卓報告ジェネレーター</title>
+  <title>卓報告ジェネレーター (最終完成版 v11)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -30,6 +30,7 @@
     <div class="lg:w-1/2 p-6 lg:p-8 space-y-6 overflow-y-auto">
       <header class="mb-6">
         <h1 class="text-2xl font-bold text-gray-900">卓報告フォーマットジェネレーター</h1>
+        <p class="text-sm text-gray-600 mt-1">入力内容を保持しつつ、多彩な表現が可能です。</p>
       </header>
 
       <div class="space-y-6">
@@ -56,10 +57,11 @@
         </div>
 
         <!-- シナリオ -->
-        <div class="section">
+        <div class="section space-y-4">
           <label class="label text-lg font-semibold text-gray-800">シナリオ</label>
-          <input type="text" id="scenarioName" placeholder="シナリオ名を入力" class="mt-2 w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
-          <div class="radio-group mt-3">
+          <input type="text" id="scenarioName" placeholder="シナリオ名" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
+          <input type="text" id="authorName" placeholder="作者名（任意）" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
+          <div>
             <p class="text-sm font-medium mb-2">飾り枠を選択:</p>
             <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 text-center">
                 <label class="option-label p-2 border rounded-lg cursor-pointer hover:bg-gray-100 block"><input type="radio" name="scenarioFrame" value="「」" class="hidden" checked>「 」</label>
@@ -86,25 +88,45 @@
         <!-- 進行 -->
         <div class="section">
           <label class="label text-lg font-semibold text-gray-800">進行</label>
-          <div class="flex space-x-4">
-              <div class="w-1/2">
-                  <p class="text-sm font-medium mb-2">役割:</p>
-                  <select name="role" class="w-full p-2 border bg-white rounded-lg focus:ring-2 focus:ring-indigo-500">
-                      <option value="KP">KP</option><option value="GM">GM</option><option value="other">その他</option>
-                  </select>
+          <select name="role" id="roleSelect" class="w-full p-2 border bg-white rounded-lg focus:ring-2 focus:ring-indigo-500 mt-2">
+              <option value="KP">KP/GM + PC</option>
+              <option value="KPC">KPC + PC</option>
+          </select>
+
+          <div id="standard-role-inputs" class="mt-4">
+              <div class="flex space-x-4">
+                  <div class="w-1/2">
+                      <p class="text-sm font-medium mb-2">役割:</p>
+                      <select name="standardRoleType" class="w-full p-2 border bg-white rounded-lg focus:ring-2 focus:ring-indigo-500">
+                          <option value="KP">KP</option><option value="GM">GM</option><option value="other">その他</option>
+                      </select>
+                  </div>
+                  <div class="w-1/2">
+                      <p class="text-sm font-medium mb-2">名前:</p>
+                      <input type="text" id="roleName" placeholder="進行のHN" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
+                  </div>
               </div>
-              <div class="w-1/2">
-                  <p class="text-sm font-medium mb-2">名前:</p>
-                  <input type="text" id="roleName" placeholder="進行のHN" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
+              <input type="text" id="standardRoleTypeOther" placeholder="役割名（「その他」を選択）" class="mt-2 w-full p-2 border rounded-lg" style="display: none;">
+          </div>
+          
+          <div id="kpc-mode-inputs" class="mt-4" style="display: none;">
+             <div class="flex space-x-4">
+                <div class="w-1/2">
+                    <p class="text-sm font-medium mb-2">KPC名:</p>
+                    <input type="text" id="kpcName" placeholder="KPCの名前" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="w-1/2">
+                    <p class="text-sm font-medium mb-2">KP名:</p>
+                    <input type="text" id="kpName" placeholder="KPのHN" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
+                </div>
               </div>
           </div>
-          <input type="text" id="roleOther" placeholder="役割名（「その他」を選択）" class="mt-2 w-full p-2 border rounded-lg" style="display: none;">
         </div>
 
         <!-- PC/HO/PL -->
         <div class="section space-y-4">
             <div class="flex items-center justify-between">
-                <label class="label text-lg font-semibold text-gray-800">PC / HO / PL</label>
+                <label class="label text-lg font-semibold text-gray-800">プレイヤー</label>
                 <div class="flex items-center space-x-4">
                     <button id="addPlayer" class="text-sm bg-indigo-500 text-white w-8 h-8 rounded-full hover:bg-indigo-600 transition-colors flex items-center justify-center">+</button>
                     <button id="removePlayer" class="text-sm bg-red-500 text-white w-8 h-8 rounded-full hover:bg-red-600 transition-colors flex items-center justify-center">-</button>
@@ -183,12 +205,12 @@
             <div class="space-y-2">
                 <p><strong>参考元:</strong> <a href="https://dddddddust.github.io/trpgtakuhoukoku/" target="_blank" class="text-indigo-600 hover:underline">卓報告フォーマットジェネレーター</a></p>
                 <p><strong>参考元開発者:</strong> ダスト (<a href="https://x.com/89_556" target="_blank" class="text-indigo-600 hover:underline">@89_556</a>)</p>
-                <p><strong>作成者:</strong> しるべ (<a href="https://x.com/qxoiUioxp" target="_blank" class="text-indigo-600 hover:underline">@qxoiUioxp</a>)</p>
+                <p><strong>改良版作成者:</strong> しるべ (<a href="https://x.com/qxoiUioxp" target="_blank" class="text-indigo-600 hover:underline">@qxoiUioxp</a>)</p>
             </div>
             <div class="mt-4">
                 <h4 class="font-semibold text-gray-700 mb-2">更新履歴</h4>
                 <ul class="list-disc list-inside space-y-1">
-                    <li>2024/06/25: 公開</li>
+                    <li>2024/06/25: 公開、作者名爛追加、KPCモード追加</li>
                 </ul>
             </div>
         </div>
@@ -218,16 +240,17 @@
       const ALL_INPUTS = 'input, select, textarea';
       const form = document.querySelector('body');
       const playersDiv = document.getElementById('players');
-      let playerCount = 2;
+      let playerCount = 1;
 
       // --- イベントリスナー ---
       form.addEventListener('input', (e) => { if (e.target.closest(ALL_INPUTS)) generate(); });
       form.addEventListener('change', (e) => {
         if (e.target.closest(ALL_INPUTS)) {
             const el = e.target;
-            if (el.id === 'systemSelect' || el.name === 'role' || el.name === 'ending' || el.name === 'result') {
+            if (el.id === 'systemSelect' || el.name === 'standardRoleType' || el.name === 'ending' || el.name === 'result') {
                 toggleOtherInput(el.value, (el.id ? el.id.replace('Select', '') : el.name) + 'Other');
             }
+            if(el.id === 'roleSelect') handleRoleChange();
             updatePlayerFieldsVisibility();
             updateRadioStyles(el.name);
             generate();
@@ -239,6 +262,20 @@
       document.getElementById('copyButton').addEventListener('click', copyToClipboard);
       
       // --- 関数定義 ---
+      function handleRoleChange(){
+        const roleMode = document.getElementById('roleSelect').value;
+        const standardInputs = document.getElementById('standard-role-inputs');
+        const kpcInputs = document.getElementById('kpc-mode-inputs');
+        
+        if(roleMode === 'KPC') {
+            standardInputs.style.display = 'none';
+            kpcInputs.style.display = 'block';
+        } else {
+            standardInputs.style.display = 'block';
+            kpcInputs.style.display = 'none';
+        }
+      }
+
       function toggleOtherInput(value, elementId) {
         const otherInput = document.getElementById(elementId);
         if (otherInput) {
@@ -316,7 +353,7 @@
           const pcplFormat = document.querySelector('input[name="pcplFormat"]:checked')?.value || 'A';
           const prefixWrapper = document.getElementById('prefix-options-wrapper');
           
-          const isHoRelevant = pcplFormat === 'A' || pcplFormat === 'B' || pcplFormat === 'C';
+          const isHoRelevant = pcplFormat === 'A' || pcplFormat === 'B';
           const isPrefixRelevant = pcplFormat === 'A' || pcplFormat === 'C';
 
           playersDiv.querySelectorAll('.ho-field').forEach(field => {
@@ -370,66 +407,73 @@
         const systemSelect = document.getElementById('systemSelect');
         const systemText = systemSelect.value === 'other' ? document.getElementById('systemOther').value : systemSelect.value || '';
         
-        const scenarioFrame = document.querySelector('input[name=scenarioFrame]:checked')?.value || '';
         const scenarioName = document.getElementById('scenarioName').value || '';
-        const decoratedScenario = decorateScenario(scenarioFrame, scenarioName);
-
-        const headerBlock = [systemText, decoratedScenario].filter(Boolean).join('\n');
-
-        let roleType = document.querySelector('select[name=role]').value;
-        let roleLabel = roleType === 'other' ? document.getElementById('roleOther').value : roleType || '';
-        const roleName = document.getElementById('roleName').value;
+        const authorName = document.getElementById('authorName').value || '';
+        const scenarioFrame = document.querySelector('input[name=scenarioFrame]:checked')?.value || '';
+        const decoratedScenario = decorateScenario(scenarioName, scenarioFrame);
+        const authorLine = authorName ? `作者：${authorName}` : "";
+        const scenarioBlock = [decoratedScenario, authorLine].filter(Boolean).join('\n');
+        
+        const headerBlock = [systemText, scenarioBlock].filter(Boolean).join('\n\n');
+        
+        const roleMode = document.getElementById('roleSelect').value;
         const font = document.querySelector('input[name=font]:checked')?.value || 'normal';
         
-        let roleOutput = (roleLabel && roleName) ? `${transformText(roleLabel, font)}：${roleName}` : "";
-        
+        let roleOutput = "";
+        let pcplOutput = "";
+
         const pcplFormat = document.querySelector('input[name="pcplFormat"]:checked')?.value || 'A';
         const prefixType = document.querySelector('input[name="prefixType"]:checked')?.value || 'HO';
         let pcplLines = [];
         let hasPlayerInfo = false;
 
-        for (let i = 1; i <= playerCount; i++) {
-            const hoEl = document.getElementById(`ho${i}`);
-            const pcEl = document.getElementById(`pc${i}`);
-            const plEl = document.getElementById(`pl${i}`);
-            if(!pcEl) continue;
-
-            const hoValue = hoEl?.value || '';
-            const pcValue = pcEl.value;
-            const plValue = plEl.value;
-
-            if (pcValue || plValue) {
-              hasPlayerInfo = true;
-              let pcplPart = "";
-              if (pcValue && plValue) pcplPart = `${pcValue} / ${plValue}`;
-              else if (pcValue) pcplPart = pcValue;
-              else if (plValue) pcplPart = plValue;
-
-              if (pcplFormat === 'D') {
-                  pcplLines.push(pcplPart);
-                  continue;
-              }
-
-              let headerPart = "";
-              const numberLabel = transformText(prefixType + i, font);
-              
-              switch(pcplFormat) {
-                case 'A': // 番号・HO名あり
-                  headerPart = numberLabel;
-                  if (hoValue) headerPart += `：${hoValue}`;
-                  break;
-                case 'B': // 番号なし・HO名あり
-                  if (hoValue) headerPart = hoValue;
-                  break;
-                case 'C': // 番号あり・HO名なし
-                  headerPart = numberLabel;
-                  break;
-              }
-              pcplLines.push([headerPart, pcplPart].filter(Boolean).join('　'));
+        if (roleMode === 'KPC') {
+            const kpcName = document.getElementById('kpcName').value || '';
+            const kpName = document.getElementById('kpName').value || '';
+            const kpcplPart = [kpcName, kpName].filter(Boolean).join(' / ');
+            if (kpcplPart) {
+                roleOutput = `${transformText('KPC', font)}：${kpcplPart}`;
+            }
+        } else {
+            let roleType = document.querySelector('select[name=standardRoleType]').value;
+            let roleLabel = roleType === 'other' ? document.getElementById('standardRoleTypeOther').value : roleType || '';
+            const roleName = document.getElementById('roleName').value;
+            if (roleLabel && roleName) {
+                roleOutput = `${transformText(roleLabel, font)}：${roleName}`;
             }
         }
         
-        let pcplOutput = "";
+        // Unified Player Block generation
+        for (let i = 1; i <= playerCount; i++) {
+            const hoValue = document.getElementById(`ho${i}`)?.value || '';
+            const pcValue = document.getElementById(`pc${i}`)?.value;
+            const plValue = document.getElementById(`pl${i}`)?.value;
+
+            if (pcValue || plValue) {
+                hasPlayerInfo = true;
+                let pcplPart = [pcValue, plValue].filter(Boolean).join(' / ');
+
+                if (pcplFormat === 'D') {
+                    pcplLines.push(pcplPart);
+                    continue;
+                }
+
+                let headerPart = "";
+                const effectivePrefix = (roleMode === 'KPC') ? 'PC' : prefixType;
+                
+                const numberLabel = (playerCount === 1 && roleMode === 'KPC') 
+                    ? transformText(effectivePrefix, font)
+                    : transformText(effectivePrefix + i, font);
+                
+                switch(pcplFormat) {
+                  case 'A': headerPart = numberLabel + (hoValue ? `：${hoValue}` : ''); break;
+                  case 'B': if (hoValue) headerPart = hoValue; break;
+                  case 'C': headerPart = numberLabel; break;
+                }
+                pcplLines.push([headerPart, pcplPart].filter(Boolean).join('　'));
+            }
+        }
+        
         if(hasPlayerInfo) {
             if(pcplFormat === 'D') {
                 const listHeader = `${transformText('PC', font)} / ${transformText('PL', font)}`;
@@ -438,7 +482,8 @@
                 pcplOutput = pcplLines.join('\n');
             }
         }
-
+        
+        const roleAndPcBlock = [roleOutput, pcplOutput].filter(Boolean).join('\n\n');
 
         const ending = document.querySelector('select[name=ending]').value;
         let endingText = ending === 'other' ? document.getElementById('endingOther').value : ending || '';
@@ -454,7 +499,7 @@
         
         const comment = document.getElementById('comment').value;
 
-        let finalOutput = [headerBlock, roleOutput, pcplOutput, resultOutput, comment]
+        let finalOutput = [headerBlock, roleAndPcBlock, resultOutput, comment]
             .filter(Boolean).join('\n\n').trim();
 
         document.getElementById('previewOutput').textContent = finalOutput;
@@ -466,27 +511,28 @@
         countElem.classList.toggle('text-gray-400', count <= 140);
       }
       
-      function decorateScenario(frameValue, name) {
+      function decorateScenario(name, frameValue) {
         if (!name) return "";
+        const content = name;
         const frames = {
-          '「」': `「${name}」`, '『』': `『${name}』`, '【】': `【${name}】`,
-          '──────': `────────────────────\n  ${name}\n────────────────────`,
-          '◤◢': `◤ ${name} ◢`,
-          '╋━━━━━━━━': `╋━━━━━━━━\n  ${name}\n━━━━━━━━╋`,
-          '＊───────': `＊─────────\n  ${name}\n─────────＊`,
-          '••┈┈┈┈': `••┈┈┈┈┈┈┈┈┈┈┈••\n  ${name}\n••┈┈┈┈┈┈┈┈┈┈┈••`,
-          '✼': `✼••┈┈••✼••┈┈••✼\n  ${name}\n✼••┈┈••✼••┈┈••✼`,
-          '✦': `✦ ⊹ ｡ ﾟ˖ ✧ ⊹ ｡ ﾟ⁖ °✦\n  ${name}\n✦ ⊹ ｡ ﾟ˖ ✧ ⊹ ｡ ﾟ⁖ °✦`,
-          '▹▸': `▹▸ ー ー ー ー ー ー\n  ${name}\nー ー ー ー ー ー ◃◂`,
-          '＝＝': `＝＝＝＝＝＝＝＝＝＝\n  ${name}\n＝＝＝＝＝＝＝＝＝＝`,
-          '▼△': `▼△▼△▼△▼△▼△▼△\n  ${name}\n▼△▼△▼△▼△▼△▼△`,
-          '☆★': `☆.｡:･★.｡:*･☆.｡:*･\n  ${name}\n｡:*･★.｡:*･☆.｡☆.｡`,
-          'o○o': `o○o。.。o○o。.。o○o\n  ${name}\n  o○o。.。o○o。.。o○o`,
-          '⌒⌒': `⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒\n  ${name}\n⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒`,
-          'ଘ♡ଓ': `ଘ♡ଓ*:゚+｡.໒꒱°*ଘ♡ଓ\n  ${name}\nଘ♡ଓ*:゚+｡.໒꒱°*ଘ♡ଓ`
+          '「」': `「${content}」`, '『』': `『${content}』`, '【】': `【${content}】`,
+          '──────': `────────────────────\n  ${content}\n────────────────────`,
+          '◤◢': `◤ ${content} ◢`,
+          '╋━━━━━━━━': `╋━━━━━━━━\n  ${content}\n━━━━━━━━╋`,
+          '＊───────': `＊─────────\n  ${content}\n─────────＊`,
+          '••┈┈┈┈': `••┈┈┈┈┈┈┈┈┈┈┈••\n  ${content}\n••┈┈┈┈┈┈┈┈┈┈┈••`,
+          '✼': `✼••┈┈••✼••┈┈••✼\n  ${content}\n✼••┈┈••✼••┈┈••✼`,
+          '✦': `✦ ⊹ ｡ ﾟ˖ ✧ ⊹ ｡ ﾟ⁖ °✦\n  ${content}\n✦ ⊹ ｡ ﾟ˖ ✧ ⊹ ｡ ﾟ⁖ °✦`,
+          '▹▸': `▹▸ ー ー ー ー ー ー\n  ${content}\nー ー ー ー ー ー ◃◂`,
+          '＝＝': `＝＝＝＝＝＝＝＝＝＝\n  ${content}\n＝＝＝＝＝＝＝＝＝＝`,
+          '▼△': `▼△▼△▼△▼△▼△▼△\n  ${content}\n▼△▼△▼△▼△▼△▼△`,
+          '☆★': `☆.｡:･★.｡:*･☆.｡:*･\n  ${content}\n｡:*･★.｡:*･☆.｡☆.｡`,
+          'o○o': `o○o。.。o○o。.。o○o\n  ${content}\n  o○o。.。o○o。.。o○o`,
+          '⌒⌒': `⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒\n  ${content}\n⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒`,
+          'ଘ♡ଓ': `ଘ♡ଓ*:゚+｡.໒꒱°*ଘ♡ଓ\n  ${content}\nଘ♡ଓ*:゚+｡.໒꒱°*ଘ♡ଓ`
         };
         const key = Object.keys(frames).find(k => k.includes(frameValue)) || frameValue;
-        return frames[key] || name;
+        return frames[key] || content;
       }
 
       function copyToClipboard() {
@@ -519,6 +565,7 @@
       for (let i = 1; i <= playerCount; i++) {
         playersDiv.insertAdjacentHTML('beforeend', createPlayerHTML(i));
       }
+      handleRoleChange(); // To set initial visibility
       generate();
       updateRadioStyles('scenarioFrame');
       updateRadioStyles('font');
