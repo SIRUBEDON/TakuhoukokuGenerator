@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ja" class="h-full bg-gray-50">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>卓報告ジェネレーター</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { font-family: 'Inter', 'Noto Sans JP', sans-serif; }
+    #previewOutput { white-space: pre-wrap; word-wrap: break-word; min-height: 300px; }
+    .option-label.selected {
+      background-color: #e0e7ff; /* indigo-100 */
+      border-color: #6366f1; /* indigo-500 */
+      box-shadow: 0 0 0 2px #a5b4fc;
+    }
+    .section {
+      background-color: white;
+      border-radius: 0.5rem;
+      padding: 1.25rem;
+      box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    }
+  </style>
+</head>
+<body class="h-full text-gray-800">
+  <div class="flex flex-col lg:flex-row min-h-screen">
+
+    <!-- 左側: 入力フォームエリア -->
+    <div class="lg:w-1/2 p-6 lg:p-8 space-y-6 overflow-y-auto">
+      <header class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">卓報告フォーマットジェネレーター</h1>
+      </header>
+
+      <div class="space-y-6">
+        <!-- システム -->
+        <div class="section">
+          <label for="systemSelect" class="label text-lg font-semibold text-gray-800">システム</label>
+          <select id="systemSelect" name="system" class="mt-2 w-full p-2 border bg-white rounded-lg focus:ring-2 focus:ring-indigo-500">
+              <option value="クトゥルフ神話TRPG">クトゥルフ神話TRPG</option>
+              <option value="新クトゥルフ神話TRPG">新クトゥルフ神話TRPG</option>
+              <option value="CoC6">CoC6</option>
+              <option value="CoC7">CoC7</option>
+              <option value="エモクロアTRPG">エモクロアTRPG</option>
+              <option value="ダブルクロス The 3rd Edition">ダブルクロス The 3rd Edition</option>
+              <option value="永い後日談のネクロニカ">永い後日談のネクロニカ</option>
+              <option value="インセイン">インセイン</option>
+              <option value="シノビガミ">シノビガミ</option>
+              <option value="マギカロギア">マギカロギア</option>
+              <option value="ダンジョンズ&ドラゴンズ">ダンジョンズ&ドラゴンズ(D&D)</option>
+              <option value="パラノイア">パラノイア</option>
+              <option value="ソード・ワールド2.5">ソード・ワールド2.5</option>
+              <option value="other">その他</option>
+          </select>
+          <input type="text" id="systemOther" placeholder="システム名（「その他」を選択）" class="mt-2 w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" style="display: none;">
+        </div>
+
+        <!-- シナリオ -->
+        <div class="section">
+          <label class="label text-lg font-semibold text-gray-800">シナリオ</label>
+          <input type="text" id="scenarioName" placeholder="シナリオ名を入力" class="mt-2 w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
+          <div class="radio-group mt-3">
+            <p class="text-sm font-medium mb-2">飾り枠を選択:</p>
+            <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 text-center">
+                <label class="option-label p-2 border rounded-lg cursor-pointer hover:bg-gray-100 block"><input type="radio" name="scenarioFrame" value="「」" class="hidden" checked>「 」</label>
+                <label class="option-label p-2 border rounded-lg cursor-pointer hover:bg-gray-100 block"><input type="radio" name="scenarioFrame" value="『』" class="hidden">『 』</label>
+                <label class="option-label p-2 border rounded-lg cursor-pointer hover:bg-gray-100 block"><input type="radio" name="scenarioFrame" value="【】" class="hidden">【 】</label>
+                <label class="option-label p-2 border rounded-lg cursor-pointer hover:bg-gray-100 block"><input type="radio" name="scenarioFrame" value="──────" class="hidden">──</label>
+                <label class="option-label p-2 border rounded-lg cursor-pointer hover:bg-gray-100 block"><input type="radio" name="scenarioFrame" value="◤◢" class="hidden">◤ ◢</label>
+                <label class="option-label p-2 border rounded-lg cursor-pointer hover:bg-gray-100 block"><input type="radio" name="scenarioFrame" value="╋━━━━━━━━" class="hidden">╋━</label>
+                <label class="option-label p-2 border rounded-lg cursor-pointer hover:bg-gray-100 block"><input type="radio" name="scenarioFrame" value="＊───────" class="hidden">＊─</label>
+                <label class="option-label p-2 border rounded-lg cursor-pointer hover:bg-gray-100 block"><input type="radio" name="scenarioFrame" value="••┈┈┈┈" class="hidden">••</label>
+                <label class="option-label p-2 border rounded-lg cursor-pointer hover:bg-gray-100 block"><input type="radio" name="scenarioFrame" value="✼" class="hidden">✼</label>
+                <label class="option-label p-2 border rounded-lg cursor-pointer hover:bg-gray-100 block"><input type="radio" name="scenarioFrame" value="✦" class="hidden">✦</label>
+                <label class="option-label p-2 border rounded-lg cursor-pointer hover:bg-gray-100 block"><input type="radio" name="scenarioFrame" value="▹▸" class="hidden">▹▸</label>
+                <label class="option-label p-2 border rounded-lg cursor-pointer hover:bg-gray-100 block"><input type="radio" name="scenarioFrame" value="＝＝" class="hidden">＝＝</label>
+                <label class="option-label p-2 border rounded-lg cursor-pointer hover:bg-gray-100 block"><input type="radio" name="scenarioFrame" value="▼△" class="hidden">▼△</label>
+                <label class="option-label p-2 border rounded-lg cursor-pointer hover:bg-gray-100 block"><input type="radio" name="scenarioFrame" value="☆★" class="hidden">☆★</label>
+                <label class="option-label p-2 border rounded-lg cursor-pointer hover:bg-gray-100 block"><input type="radio" name="scenarioFrame" value="o○o" class="hidden">o○o</label>
+                <label class="option-label p-2 border rounded-lg cursor-pointer hover:bg-gray-100 block"><input type="radio" name="scenarioFrame" value="⌒⌒" class="hidden">⌒⌒</label>
+                <label class="option-label p-2 border rounded-lg cursor-pointer hover:bg-gray-100 block"><input type="radio" name="scenarioFrame" value="ଘ♡ଓ" class="hidden">ଘ♡ଓ</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- 進行 -->
+        <div class="section">
+          <label class="label text-lg font-semibold text-gray-800">進行</label>
+          <div class="flex space-x-4">
+              <div class="w-1/2">
+                  <p class="text-sm font-medium mb-2">役割:</p>
+                  <select name="role" class="w-full p-2 border bg-white rounded-lg focus:ring-2 focus:ring-indigo-500">
+                      <option value="KP">KP</option><option value="GM">GM</option><option value="other">その他</option>
+                  </select>
+              </div>
+              <div class="w-1/2">
+                  <p class="text-sm font-medium mb-2">名前:</p>
+                  <input type="text" id="roleName" placeholder="進行のHN" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
+              </div>
+          </div>
+          <input type="text" id="roleOther" placeholder="役割名（「その他」を選択）" class="mt-2 w-full p-2 border rounded-lg" style="display: none;">
+        </div>
+
+        <!-- PC/HO/PL -->
+        <div class="section space-y-4">
+            <div class="flex items-center justify-between">
+                <label class="label text-lg font-semibold text-gray-800">PC / HO / PL</label>
+                <div class="flex items-center space-x-4">
+                    <button id="addPlayer" class="text-sm bg-indigo-500 text-white w-8 h-8 rounded-full hover:bg-indigo-600 transition-colors flex items-center justify-center">+</button>
+                    <button id="removePlayer" class="text-sm bg-red-500 text-white w-8 h-8 rounded-full hover:bg-red-600 transition-colors flex items-center justify-center">-</button>
+                </div>
+            </div>
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <p class="text-sm font-medium mb-2">表記フォーマット:</p>
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <label class="option-label p-3 border rounded-lg cursor-pointer hover:bg-gray-100"><input type="radio" name="pcplFormat" value="A" class="hidden" checked>番号・HO名あり</label>
+                        <label class="option-label p-3 border rounded-lg cursor-pointer hover:bg-gray-100"><input type="radio" name="pcplFormat" value="B" class="hidden">番号なし・HO名あり</label>
+                        <label class="option-label p-3 border rounded-lg cursor-pointer hover:bg-gray-100"><input type="radio" name="pcplFormat" value="C" class="hidden">番号あり・HO名なし</label>
+                        <label class="option-label p-3 border rounded-lg cursor-pointer hover:bg-gray-100"><input type="radio" name="pcplFormat" value="D" class="hidden">リスト形式</label>
+                    </div>
+                </div>
+                <div id="prefix-options-wrapper">
+                    <p class="text-sm font-medium mb-2">番号の接頭辞:</p>
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                         <label class="option-label p-3 border rounded-lg cursor-pointer hover:bg-gray-100"><input type="radio" name="prefixType" value="HO" class="hidden" checked>HO</label>
+                         <label class="option-label p-3 border rounded-lg cursor-pointer hover:bg-gray-100"><input type="radio" name="prefixType" value="PC" class="hidden">PC</label>
+                    </div>
+                </div>
+            </div>
+            <div id="players" class="space-y-4"></div>
+        </div>
+        
+        <!-- エンド・結果 -->
+        <div class="section grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="label text-lg font-semibold text-gray-800">エンド</label>
+                <select name="ending" class="w-full p-2 border bg-white rounded-lg focus:ring-2 focus:ring-indigo-500 mt-2">
+                    <option value="">エンドを選択</option>
+                    <option value="END1">END1</option><option value="END A">END A</option><option value="other">その他</option>
+                </select>
+                <input type="text" id="endingOther" placeholder="エンド名（「その他」を選択）" class="mt-2 w-full p-2 border rounded-lg" style="display: none;">
+            </div>
+            <div>
+                <label class="label text-lg font-semibold text-gray-800">結果</label>
+                <select name="result" class="w-full p-2 border bg-white rounded-lg focus:ring-2 focus:ring-indigo-500 mt-2">
+                    <option value="">結果を選択</option>
+                    <option value="全生還">全生還</option><option value="両生還">両生還</option><option value="一部生還">一部生還</option>
+                    <option value="全ロスト">全ロスト</option><option value="両ロスト">両ロスト</option><option value="other">その他</option>
+                </select>
+                <input type="text" id="resultOther" placeholder="結果詳細（「その他」を選択）" class="mt-2 w-full p-2 border rounded-lg" style="display: none;">
+            </div>
+        </div>
+
+        <!-- フォント -->
+        <div class="section">
+          <label class="label text-lg font-semibold text-gray-800">フォント</label>
+          <div class="radio-group mt-2 grid grid-cols-3 sm:grid-cols-4 gap-2">
+              <label class="option-label p-3 border rounded-lg cursor-pointer hover:bg-gray-100 text-center"><input type="radio" name="font" value="normal" class="hidden" checked>PC/PL</label>
+              <label class="option-label p-3 border rounded-lg cursor-pointer hover:bg-gray-100 text-center"><input type="radio" name="font" value="bold-serif" class="hidden">𝐏𝐂/𝐏𝐋</label>
+              <label class="option-label p-3 border rounded-lg cursor-pointer hover:bg-gray-100 text-center"><input type="radio" name="font" value="sans-serif" class="hidden">𝖯𝖢/𝖯𝖫</label>
+              <label class="option-label p-3 border rounded-lg cursor-pointer hover:bg-gray-100 text-center"><input type="radio" name="font" value="bold-sans-serif" class="hidden">𝗣𝗖/𝗣𝗟</label>
+              <label class="option-label p-3 border rounded-lg cursor-pointer hover:bg-gray-100 text-center"><input type="radio" name="font" value="italic-sans-serif" class="hidden">𝘗𝘊/𝘗𝘓</label>
+              <label class="option-label p-3 border rounded-lg cursor-pointer hover:bg-gray-100 text-center"><input type="radio" name="font" value="script-bold" class="hidden">𝒫𝒞/𝒫ℒ</label>
+              <label class="option-label p-3 border rounded-lg cursor-pointer hover:bg-gray-100 text-center"><input type="radio" name="font" value="script" class="hidden">𝓟𝓒/𝓟𝓛</label>
+              <label class="option-label p-3 border rounded-lg cursor-pointer hover:bg-gray-100 text-center"><input type="radio" name="font" value="monospace" class="hidden">𝙿𝙲/𝙿𝙻</label>
+              <label class="option-label p-3 border rounded-lg cursor-pointer hover:bg-gray-100 text-center"><input type="radio" name="font" value="fraktur" class="hidden">𝔓ℭ/𝔓𝔏</label>
+              <label class="option-label p-3 border rounded-lg cursor-pointer hover:bg-gray-100 text-center"><input type="radio" name="font" value="double-struck" class="hidden">ℙℂ/ℙ𝕃</label>
+              <label class="option-label p-3 border rounded-lg cursor-pointer hover:bg-gray-100 text-center"><input type="radio" name="font" value="circled" class="hidden">ⓅⒸ/ⓅⓁ</label>
+              <label class="option-label p-3 border rounded-lg cursor-pointer hover:bg-gray-100 text-center"><input type="radio" name="font" value="regional" class="hidden">🇵🇨/🇵🇱</label>
+          </div>
+        </div>
+        
+        <!-- コメント -->
+        <div class="section">
+            <label for="comment" class="label text-lg font-semibold text-gray-800">コメント・ハッシュタグ</label>
+            <textarea id="comment" placeholder="感想などを自由に入力" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 mt-2" rows="4"></textarea>
+        </div>
+
+        <!-- クレジット -->
+        <div class="section text-sm text-gray-600">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">クレジット & 更新履歴</h3>
+            <div class="space-y-2">
+                <p><strong>参考元:</strong> <a href="https://dddddddust.github.io/trpgtakuhoukoku/" target="_blank" class="text-indigo-600 hover:underline">卓報告フォーマットジェネレーター</a></p>
+                <p><strong>参考元開発者:</strong> ダスト (<a href="https://x.com/89_556" target="_blank" class="text-indigo-600 hover:underline">@89_556</a>)</p>
+                <p><strong>作成者:</strong> しるべ (<a href="https://x.com/qxoiUioxp" target="_blank" class="text-indigo-600 hover:underline">@qxoiUioxp</a>)</p>
+            </div>
+            <div class="mt-4">
+                <h4 class="font-semibold text-gray-700 mb-2">更新履歴</h4>
+                <ul class="list-disc list-inside space-y-1">
+                    <li>2024/06/25: 公開</li>
+                </ul>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右側: リアルタイムプレビューエリア -->
+    <div class="lg:w-1/2 bg-gray-900 text-white p-6 lg:p-8 flex flex-col sticky top-0 h-screen">
+      <div class="flex-grow bg-white/5 rounded-xl p-6 overflow-y-auto">
+        <h2 class="text-xl font-bold mb-4">プレビュー</h2>
+        <pre id="previewOutput" class="text-sm leading-relaxed"></pre>
+      </div>
+      <div class="flex-shrink-0 mt-6">
+        <div class="flex justify-between items-center mb-2">
+            <p id="charCount" class="text-sm font-mono">文字数: 0</p>
+            <div id="copy-status" class="text-sm text-green-400 opacity-0 transition-opacity">コピーしました！</div>
+        </div>
+        <button id="copyButton" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+          テキストをコピー
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const ALL_INPUTS = 'input, select, textarea';
+      const form = document.querySelector('body');
+      const playersDiv = document.getElementById('players');
+      let playerCount = 2;
+
+      // --- イベントリスナー ---
+      form.addEventListener('input', (e) => { if (e.target.closest(ALL_INPUTS)) generate(); });
+      form.addEventListener('change', (e) => {
+        if (e.target.closest(ALL_INPUTS)) {
+            const el = e.target;
+            if (el.id === 'systemSelect' || el.name === 'role' || el.name === 'ending' || el.name === 'result') {
+                toggleOtherInput(el.value, (el.id ? el.id.replace('Select', '') : el.name) + 'Other');
+            }
+            updatePlayerFieldsVisibility();
+            updateRadioStyles(el.name);
+            generate();
+        }
+      });
+
+      document.getElementById('addPlayer').addEventListener('click', addPlayer);
+      document.getElementById('removePlayer').addEventListener('click', removePlayer);
+      document.getElementById('copyButton').addEventListener('click', copyToClipboard);
+      
+      // --- 関数定義 ---
+      function toggleOtherInput(value, elementId) {
+        const otherInput = document.getElementById(elementId);
+        if (otherInput) {
+          otherInput.style.display = value === 'other' ? 'block' : 'none';
+          if (value !== 'other') otherInput.value = '';
+        }
+      }
+      
+      function getPlayerData() {
+        const data = [];
+        for (let i = 1; i <= playerCount; i++) {
+            const ho = document.getElementById(`ho${i}`)?.value;
+            const pc = document.getElementById(`pc${i}`)?.value;
+            const pl = document.getElementById(`pl${i}`)?.value;
+            data.push({ ho, pc, pl });
+        }
+        return data;
+      }
+
+      function reapplyPlayerData(data) {
+        data.forEach((player, index) => {
+            const i = index + 1;
+            const hoInput = document.getElementById(`ho${i}`);
+            const pcInput = document.getElementById(`pc${i}`);
+            const plInput = document.getElementById(`pl${i}`);
+            if (hoInput) hoInput.value = player.ho || '';
+            if (pcInput) pcInput.value = player.pc || '';
+            if (plInput) plInput.value = player.pl || '';
+        });
+      }
+
+      function addPlayer(e) {
+        e.preventDefault();
+        if (playerCount < 8) {
+          const currentData = getPlayerData();
+          playerCount++;
+          const newPlayerHTML = createPlayerHTML(playerCount);
+          playersDiv.insertAdjacentHTML('beforeend', newPlayerHTML);
+          reapplyPlayerData(currentData);
+          updatePlayerFieldsVisibility();
+        }
+      }
+
+      function removePlayer(e) {
+        e.preventDefault();
+        if (playerCount > 1) {
+          const currentData = getPlayerData().slice(0, playerCount - 1);
+          playerCount--;
+          if (playersDiv.lastElementChild) playersDiv.lastElementChild.remove();
+          reapplyPlayerData(currentData);
+        }
+      }
+
+      function createPlayerHTML(index) {
+          return `
+            <div class="player-entry bg-gray-50 p-3 rounded-lg border">
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="ho-field">
+                  <label class="text-xs font-medium text-gray-600">HO ${index}</label>
+                  <input type="text" id="ho${index}" placeholder="例: HO1" class="w-full p-2 mt-1 border rounded-md text-sm">
+                </div>
+                <div>
+                  <label class="text-xs font-medium text-gray-600">PC ${index}</label>
+                  <input type="text" id="pc${index}" placeholder="PC名" class="w-full p-2 mt-1 border rounded-md text-sm">
+                </div>
+                <div>
+                  <label class="text-xs font-medium text-gray-600">PL ${index}</label>
+                  <input type="text" id="pl${index}" placeholder="PL名" class="w-full p-2 mt-1 border rounded-md text-sm">
+                </div>
+              </div>
+            </div>`;
+      }
+      
+      function updatePlayerFieldsVisibility() {
+          const pcplFormat = document.querySelector('input[name="pcplFormat"]:checked')?.value || 'A';
+          const prefixWrapper = document.getElementById('prefix-options-wrapper');
+          
+          const isHoRelevant = pcplFormat === 'A' || pcplFormat === 'B' || pcplFormat === 'C';
+          const isPrefixRelevant = pcplFormat === 'A' || pcplFormat === 'C';
+
+          playersDiv.querySelectorAll('.ho-field').forEach(field => {
+              field.style.display = isHoRelevant ? 'block' : 'none';
+          });
+          
+          if(prefixWrapper) {
+            prefixWrapper.style.display = isPrefixRelevant ? 'block' : 'none';
+          }
+          generate();
+      }
+
+      function updateRadioStyles(groupName) {
+        if (!groupName) return;
+        document.querySelectorAll(`input[name="${groupName}"]`).forEach(r => {
+          r.parentElement.classList.remove('selected');
+        });
+        const selected = document.querySelector(`input[name="${groupName}"]:checked`);
+        if (selected) {
+          selected.parentElement.classList.add('selected');
+        }
+      }
+
+      const fontTransformations = {
+        'normal': {},
+        'bold-serif': {'A':'𝐏','B':'𝐁','C':'𝐂','D':'𝐃','E':'𝐄','F':'𝐅','G':'𝐆','H':'𝐇','I':'𝐈','J':'𝐉','K':'𝐊','L':'𝐋','M':'𝐌','N':'𝐍','O':'𝐎','P':'𝐏','Q':'𝐐','R':'𝐑','S':'𝐒','T':'𝐓','U':'𝐔','V':'𝐕','W':'𝐖','X':'𝐗','Y':'𝐘','Z':'𝐙','a':'𝐩','b':'𝐛','c':'𝐜','d':'𝐝','e':'𝐞','f':'𝐟','g':'𝐠','h':'𝐡','i':'𝐢','j':'𝐣','k':'𝐤','l':'𝐥','m':'𝐦','n':'𝐧','o':'𝐨','p':'𝐩','q':'𝐪','r':'𝐫','s':'𝐬','t':'𝐭','u':'𝐮','v':'𝐯','w':'𝐰','x':'𝐱','y':'𝐲','z':'𝐳','0':'𝟎','1':'𝟏','2':'𝟐','3':'𝟑','4':'𝟒','5':'𝟓','6':'𝟔','7':'𝟕','8':'𝟖','9':'𝟗'},
+        'sans-serif': {'A':'𝖯','B':'𝖡','C':'𝖢','D':'𝖣','E':'𝖤','F':'𝖥','G':'𝖦','H':'𝖧','I':'𝖨','J':'𝖩','K':'𝖪','L':'𝖫','M':'𝖬','N':'𝖭','O':'𝖮','P':'𝖯','Q':'𝖰','R':'𝖱','S':'𝖲','T':'𝖳','U':'𝖴','V':'𝖵','W':'𝖶','X':'𝖷','Y':'𝖸','Z':'𝖹','a':'𝗉','b':'𝗊','c':'𝖼','d':'𝖽','e':'𝖾','f':'𝖿','g':'𝗀','h':'𝗁','i':'𝗂','j':'𝗃','k':'𝗄','l':'𝗅','m':'𝗆','n':'𝗇','o':'𝗈','p':'𝗉','q':'𝗊','r':'𝗋','s':'𝗌','t':'𝗍','u':'𝗎','v':'𝗏','w':'𝗐','x':'𝗑','y':'𝗒','z':'𝗓','0':'𝟢','1':'𝟣','2':'𝟤','3':'𝟥','4':'𝟦','5':'𝟧','6':'𝟨','7':'𝟩','8':'𝟪','9':'𝟫'},
+        'bold-sans-serif': {'A':'𝗣','B':'𝗕','C':'𝗖','D':'𝗗','E':'𝗘','F':'𝗙','G':'𝗚','H':'𝗛','I':'𝗜','J':'𝗝','K':'𝗞','L':'𝗟','M':'𝗠','N':'𝗡','O':'𝗢','P':'𝗣','Q':'𝗤','R':'𝗥','S':'𝗦','T':'𝗧','U':'𝗨','V':'𝗩','W':'𝗪','X':'𝗫','Y':'𝗬','Z':'𝗭','a':'𝗽','b':'𝗯','c':'𝗰','d':'𝗱','e':'𝗲','f':'𝗳','g':'𝗴','h':'𝗵','i':'𝗶','j':'𝗷','k':'𝗸','l':'𝗹','m':'𝗺','n':'𝗻','o':'𝗼','p':'𝗽','q':'𝗾','r':'𝗿','s':'𝘀','t':'𝘁','u':'𝘂','v':'𝘃','w':'𝘄','x':'𝘅','y':'𝘆','z':'𝘇','0':'𝟬','1':'𝟭','2':'𝟮','3':'𝟯','4':'𝟰','5':'𝟱','6':'𝟲','7':'𝟳','8':'𝟴','9':'𝟵'},
+        'italic-sans-serif': {'A':'𝘗','B':'𝘉','C':'𝘊','D':'𝘋','E':'𝘌','F':'𝘍','G':'𝘎','H':'𝘏','I':'𝘐','J':'𝘑','K':'𝘒','L':'𝘓','M':'𝘔','N':'𝘕','O':'𝘖','P':'𝘗','Q':'𝘘','R':'𝘙','S':'𝘚','T':'𝘛','U':'𝘜','V':'𝘝','W':'𝘞','X':'𝘟','Y':'𝘠','Z':'𝘡','a':'𝘱','b':'𝘣','c':'𝘤','d':'𝘥','e':'𝘦','f':'𝘧','g':'𝘨','h':'𝘩','i':'𝘪','j':'𝘫','k':'𝘬','l':'𝘭','m':'𝘮','n':'𝘯','o':'𝘰','p':'𝘱','q':'𝘲','r':'𝘳','s':'𝘴','t':'𝘵','u':'𝘶','v':'𝘷','w':'𝘸','x':'𝘹','y':'𝘺','z':'𝘻','0':'𝟬','1':'𝟭','2':'𝟮','3':'𝟯','4':'𝟰','5':'𝟱','6':'𝟲','7':'𝟳','8':'𝟴','9':'𝟵'},
+        'script-bold': {'A':'𝒫','B':'𝒬','C':'𝒞','D':'𝒟','E':'ℰ','F':'ℱ','G':'𝒢','H':'ℋ','I':'ℐ','J':'𝒥','K':'𝒦','L':'ℒ','M':'ℳ','N':'𝒩','O':'𝒪','P':'𝒫','Q':'𝒬','R':'ℛ','S':'𝒮','T':'𝒯','U':'𝒰','V':'𝒱','W':'𝒲','X':'𝒳','Y':'𝒴','Z':'𝒵','a':'𝓪','b':'𝓫','c':'𝓬','d':'𝓭','e':'𝓮','f':'𝓯','g':'𝓰','h':'𝓱','i':'𝓲','j':'𝓳','k':'𝓴','l':'𝓵','m':'𝓶','n':'𝓷','o':'𝓸','p':'𝓹','q':'𝓺','r':'𝓻','s':'𝓼','t':'𝓽','u':'𝓾','v':'𝓿','w':'𝔀','x':'𝔁','y':'𝔂','z':'𝔃','0':'𝟬','1':'𝟭','2':'𝟮','3':'𝟯','4':'𝟰','5':'𝟱','6':'𝟲','7':'𝟳','8':'𝟴','9':'𝟵'},
+        'script': {'A':'𝓟','B':'𝓠','C':'𝓒','D':'𝓓','E':'𝓔','F':'𝓕','G':'𝓖','H':'𝓗','I':'𝓘','J':'𝓙','K':'𝓚','L':'𝓛','M':'𝓜','N':'𝓝','O':'𝓞','P':'𝓟','Q':'𝓠','R':'𝓡','S':'𝓢','T':'𝓣','U':'𝓤','V':'𝓥','W':'𝓦','X':'𝓧','Y':'𝓨','Z':'𝓩','a':'𝓹','b':'𝓺','c':'𝓬','d':'𝓭','e':'𝓮','f':'𝓯','g':'𝓰','h':'𝓱','i':'𝓲','j':'𝓳','k':'𝓴','l':'𝓵','m':'𝓶','n':'𝓷','o':'𝓸','p':'𝓹','q':'𝓺','r':'𝓻','s':'𝓼','t':'𝓽','u':'𝓾','v':'𝓿','w':'𝔀','x':'𝔁','y':'𝔂','z':'𝔃','0':'𝟬','1':'𝟭','2':'𝟮','3':'𝟯','4':'𝟰','5':'𝟱','6':'𝟲','7':'𝟳','8':'𝟴','9':'𝟵'},
+        'monospace': {'A':'𝙿','B':'𝙱','C':'𝙲','D':'𝙳','E':'𝙴','F':'𝙵','G':'𝙶','H':'𝙷','I':'𝙸','J':'𝙹','K':'𝙺','L':'𝙻','M':'𝙼','N':'𝙽','O':'𝙾','P':'𝙿','Q':'𝚀','R':'𝚁','S':'𝚂','T':'𝚃','U':'𝚄','V':'𝚅','W':'𝚆','X':'𝚇','Y':'𝚈','Z':'𝚉','a':'𝚙','b':'𝚋','c':'𝚌','d':'𝚍','e':'𝚎','f':'𝚏','g':'𝚐','h':'𝚑','i':'𝚒','j':'𝚓','k':'𝚔','l':'𝚕','m':'𝚖','n':'𝚗','o':'𝚘','p':'𝚙','q':'𝚚','r':'𝚛','s':'𝚜','t':'𝚝','u':'𝚞','v':'𝚟','w':'𝚠','x':'𝚡','y':'𝚢','z':'𝚣','0':'𝟶','1':'𝟷','2':'𝟸','3':'𝟹','4':'𝟺','5':'𝟻','6':'𝟼','7':'𝟽','8':'𝟾','9':'𝟿'},
+        'fraktur': {'A':'𝔓','B':'𝔔','C':'ℭ','D':'𝔇','E':'𝔈','F':'𝔉','G':'𝔊','H':'ℌ','I':'ℑ','J':'𝔍','K':'𝔎','L':'𝔏','M':'𝔐','N':'𝔑','O':'𝔒','P':'𝔓','Q':'𝔔','R':'ℜ','S':'𝔖','T':'𝔗','U':'𝔘','V':'𝔙','W':'𝔚','X':'𝔛','Y':'𝔜','Z':'ℨ','a':'𝔭','b':'𝔮','c':'𝔠','d':'𝔡','e':'𝔢','f':'𝔣','g':'𝔤','h':'𝔥','i':'𝔦','j':'𝔧','k':'𝔨','l':'𝔩','m':'𝔪','n':'𝔫','o':'𝔬','p':'𝔭','q':'𝔮','r':'𝔯','s':'𝔰','t':'𝔱','u':'𝔲','v':'𝔳','w':'𝔴','x':'𝔵','y':'𝔶','z':'𝔷','0':'𝟶','1':'𝟷','2':'𝟸','3':'𝟹','4':'𝟺','5':'𝟻','6':'𝟼','7':'𝟽','8':'𝟾','9':'𝟿'},
+        'double-struck': {'A':'𝔸','B':'𝔹','C':'ℂ','D':'𝔻','E':'𝔼','F':'𝔽','G':'𝔾','H':'ℍ','I':'𝕀','J':'𝕁','K':'𝕂','L':'𝕃','M':'𝕄','N':'ℕ','O':'𝕆','P':'ℙ','Q':'ℚ','R':'ℝ','S':'𝕊','T':'𝕋','U':'𝕌','V':'𝕍','W':'𝕎','X':'𝕏','Y':'𝕐','Z':'ℤ','a':'𝕒','b':'𝕓','c':'𝕔','d':'𝕕','e':'𝕖','f':'𝕗','g':'𝕘','h':'𝕙','i':'𝕚','j':'𝕛','k':'𝕜','l':'𝕝','m':'𝕞','n':'𝕟','o':'𝕠','p':'𝕡','q':'𝕢','r':'𝕣','s':'𝕤','t':'𝕥','u':'𝕦','v':'𝕧','w':'𝕨','x':'𝕩','y':'𝕪','z':'𝕫','0':'𝟘','1':'𝟙','2':'𝟚','3':'𝟛','4':'𝟜','5':'𝟝','6':'𝟞','7':'𝟟','8':'𝟠','9':'𝟡'},
+        'circled': {'A':'Ⓐ','B':'Ⓑ','C':'Ⓒ','D':'Ⓓ','E':'Ⓔ','F':'Ⓕ','G':'Ⓖ','H':'Ⓗ','I':'Ⓘ','J':'Ⓙ','K':'Ⓚ','L':'Ⓛ','M':'Ⓜ','N':'Ⓝ','O':'Ⓞ','P':'Ⓟ','Q':'Ⓠ','R':'Ⓡ','S':'Ⓢ','T':'Ⓣ','U':'Ⓤ','V':'Ⓥ','W':'Ⓦ','X':'Ⓧ','Y':'Ⓨ','Z':'Ⓩ','a':'ⓐ','b':'ⓑ','c':'ⓒ','d':'ⓓ','e':'ⓔ','f':'ⓕ','g':'ⓖ','h':'ⓗ','i':'ⓘ','j':'ⓙ','k':'ⓚ','l':'ⓛ','m':'ⓜ','n':'ⓝ','o':'ⓞ','p':'ⓟ','q':'ⓠ','r':'ⓡ','s':'ⓢ','t':'ⓣ','u':'ⓤ','v':'ⓥ','w':'ⓦ','x':'ⓧ','y':'ⓨ','z':'ⓩ','0':'⓪','1':'①','2':'②','3':'③','4':'④','5':'⑤','6':'⑥','7':'⑦','8':'⑧','9':'⑨'},
+        'regional': {'A':'🇦','B':'🇧','C':'🇨','D':'🇩','E':'🇪','F':'🇫','G':'🇬','H':'🇭','I':'🇮','J':'🇯','K':'🇰','L':'🇱','M':'🇲','N':'🇳','O':'🇴','P':'🇵','Q':'🇶','R':'🇷','S':'🇸','T':'🇹','U':'🇺','V':'🇻','W':'🇼','X':'🇽','Y':'🇾','Z':'🇿','0':'₀','1':'₁','2':'₂','3':'₃','4':'₄','5':'₅','6':'₆','7':'₇','8':'₈','9':'₉'},
+      };
+
+      function transformText(text, fontStyle) {
+        const transformMap = fontTransformations[fontStyle];
+        if (!transformMap || Object.keys(transformMap).length === 0) return text;
+        
+        let result = '';
+        for (const char of text) {
+          result += transformMap[char.toUpperCase()] || transformMap[char] || char;
+        }
+        return result.replace(/undefined/g, ''); // Safety net
+      }
+      
+      function generate() {
+        const systemSelect = document.getElementById('systemSelect');
+        const systemText = systemSelect.value === 'other' ? document.getElementById('systemOther').value : systemSelect.value || '';
+        
+        const scenarioFrame = document.querySelector('input[name=scenarioFrame]:checked')?.value || '';
+        const scenarioName = document.getElementById('scenarioName').value || '';
+        const decoratedScenario = decorateScenario(scenarioFrame, scenarioName);
+
+        const headerBlock = [systemText, decoratedScenario].filter(Boolean).join('\n');
+
+        let roleType = document.querySelector('select[name=role]').value;
+        let roleLabel = roleType === 'other' ? document.getElementById('roleOther').value : roleType || '';
+        const roleName = document.getElementById('roleName').value;
+        const font = document.querySelector('input[name=font]:checked')?.value || 'normal';
+        
+        let roleOutput = (roleLabel && roleName) ? `${transformText(roleLabel, font)}：${roleName}` : "";
+        
+        const pcplFormat = document.querySelector('input[name="pcplFormat"]:checked')?.value || 'A';
+        const prefixType = document.querySelector('input[name="prefixType"]:checked')?.value || 'HO';
+        let pcplLines = [];
+        let hasPlayerInfo = false;
+
+        for (let i = 1; i <= playerCount; i++) {
+            const hoEl = document.getElementById(`ho${i}`);
+            const pcEl = document.getElementById(`pc${i}`);
+            const plEl = document.getElementById(`pl${i}`);
+            if(!pcEl) continue;
+
+            const hoValue = hoEl?.value || '';
+            const pcValue = pcEl.value;
+            const plValue = plEl.value;
+
+            if (pcValue || plValue) {
+              hasPlayerInfo = true;
+              let pcplPart = "";
+              if (pcValue && plValue) pcplPart = `${pcValue} / ${plValue}`;
+              else if (pcValue) pcplPart = pcValue;
+              else if (plValue) pcplPart = plValue;
+
+              if (pcplFormat === 'D') {
+                  pcplLines.push(pcplPart);
+                  continue;
+              }
+
+              let headerPart = "";
+              const numberLabel = transformText(prefixType + i, font);
+              
+              switch(pcplFormat) {
+                case 'A': // 番号・HO名あり
+                  headerPart = numberLabel;
+                  if (hoValue) headerPart += `：${hoValue}`;
+                  break;
+                case 'B': // 番号なし・HO名あり
+                  if (hoValue) headerPart = hoValue;
+                  break;
+                case 'C': // 番号あり・HO名なし
+                  headerPart = numberLabel;
+                  break;
+              }
+              pcplLines.push([headerPart, pcplPart].filter(Boolean).join('　'));
+            }
+        }
+        
+        let pcplOutput = "";
+        if(hasPlayerInfo) {
+            if(pcplFormat === 'D') {
+                const listHeader = `${transformText('PC', font)} / ${transformText('PL', font)}`;
+                pcplOutput = `${listHeader}\n${pcplLines.join('\n')}`;
+            } else {
+                pcplOutput = pcplLines.join('\n');
+            }
+        }
+
+
+        const ending = document.querySelector('select[name=ending]').value;
+        let endingText = ending === 'other' ? document.getElementById('endingOther').value : ending || '';
+
+        const result = document.querySelector('select[name=result]').value;
+        let resultText = result === 'other' ? document.getElementById('resultOther').value : result || '';
+        
+        let resultOutput = "";
+        if (endingText || resultText) {
+          if(endingText) resultOutput += endingText;
+          if (resultText) resultOutput += (resultOutput ? '\n' : '') + `▸ ${resultText}にてシナリオ終了`;
+        }
+        
+        const comment = document.getElementById('comment').value;
+
+        let finalOutput = [headerBlock, roleOutput, pcplOutput, resultOutput, comment]
+            .filter(Boolean).join('\n\n').trim();
+
+        document.getElementById('previewOutput').textContent = finalOutput;
+
+        const count = finalOutput.length;
+        const countElem = document.getElementById('charCount');
+        countElem.textContent = `文字数: ${count}`;
+        countElem.classList.toggle('text-red-400', count > 140);
+        countElem.classList.toggle('text-gray-400', count <= 140);
+      }
+      
+      function decorateScenario(frameValue, name) {
+        if (!name) return "";
+        const frames = {
+          '「」': `「${name}」`, '『』': `『${name}』`, '【】': `【${name}】`,
+          '──────': `────────────────────\n  ${name}\n────────────────────`,
+          '◤◢': `◤ ${name} ◢`,
+          '╋━━━━━━━━': `╋━━━━━━━━\n  ${name}\n━━━━━━━━╋`,
+          '＊───────': `＊─────────\n  ${name}\n─────────＊`,
+          '••┈┈┈┈': `••┈┈┈┈┈┈┈┈┈┈┈••\n  ${name}\n••┈┈┈┈┈┈┈┈┈┈┈••`,
+          '✼': `✼••┈┈••✼••┈┈••✼\n  ${name}\n✼••┈┈••✼••┈┈••✼`,
+          '✦': `✦ ⊹ ｡ ﾟ˖ ✧ ⊹ ｡ ﾟ⁖ °✦\n  ${name}\n✦ ⊹ ｡ ﾟ˖ ✧ ⊹ ｡ ﾟ⁖ °✦`,
+          '▹▸': `▹▸ ー ー ー ー ー ー\n  ${name}\nー ー ー ー ー ー ◃◂`,
+          '＝＝': `＝＝＝＝＝＝＝＝＝＝\n  ${name}\n＝＝＝＝＝＝＝＝＝＝`,
+          '▼△': `▼△▼△▼△▼△▼△▼△\n  ${name}\n▼△▼△▼△▼△▼△▼△`,
+          '☆★': `☆.｡:･★.｡:*･☆.｡:*･\n  ${name}\n｡:*･★.｡:*･☆.｡☆.｡`,
+          'o○o': `o○o。.。o○o。.。o○o\n  ${name}\n  o○o。.。o○o。.。o○o`,
+          '⌒⌒': `⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒\n  ${name}\n⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒⌒`,
+          'ଘ♡ଓ': `ଘ♡ଓ*:゚+｡.໒꒱°*ଘ♡ଓ\n  ${name}\nଘ♡ଓ*:゚+｡.໒꒱°*ଘ♡ଓ`
+        };
+        const key = Object.keys(frames).find(k => k.includes(frameValue)) || frameValue;
+        return frames[key] || name;
+      }
+
+      function copyToClipboard() {
+          const textToCopy = document.getElementById('previewOutput').textContent;
+          if (navigator.clipboard && window.isSecureContext) {
+              navigator.clipboard.writeText(textToCopy).then(showCopySuccess, () => console.error('クリップボードへのコピーに失敗しました'));
+          } else {
+              const textArea = document.createElement("textarea");
+              textArea.value = textToCopy;
+              textArea.style.position = "fixed"; textArea.style.left = "-9999px";
+              document.body.appendChild(textArea);
+              textArea.focus(); textArea.select();
+              try {
+                  document.execCommand('copy');
+                  showCopySuccess();
+              } catch (err) {
+                  console.error('フォールバックでのコピーに失敗しました', err);
+              }
+              document.body.removeChild(textArea);
+          }
+      }
+
+      function showCopySuccess() {
+          const statusElem = document.getElementById('copy-status');
+          statusElem.classList.remove('opacity-0');
+          setTimeout(() => statusElem.classList.add('opacity-0'), 2000);
+      }
+      
+      // --- 初期化 ---
+      for (let i = 1; i <= playerCount; i++) {
+        playersDiv.insertAdjacentHTML('beforeend', createPlayerHTML(i));
+      }
+      generate();
+      updateRadioStyles('scenarioFrame');
+      updateRadioStyles('font');
+      updateRadioStyles('pcplFormat');
+      updateRadioStyles('prefixType');
+      updatePlayerFieldsVisibility();
+    });
+  </script>
+</body>
+</html>
